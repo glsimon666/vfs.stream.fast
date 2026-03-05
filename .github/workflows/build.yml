@@ -36,6 +36,19 @@ jobs:
             triplet: x86-windows-static
             cmake-args: -A Win32
 
+          # --- macOS ---
+          - os: macos
+            arch: x86_64
+            runs-on: macos-latest
+            triplet: x64-osx
+            cmake-args: "-DCMAKE_OSX_ARCHITECTURES=x86_64"
+
+          - os: macos
+            arch: arm64
+            runs-on: macos-14
+            triplet: arm64-osx
+            cmake-args: "-DCMAKE_OSX_ARCHITECTURES=arm64"
+
           # --- Linux (Ubuntu) ---
           - os: linux
             arch: x86_64
@@ -136,6 +149,8 @@ jobs:
           # 复制并重命名二进制文件 (Kodi 需要特定的文件名)
           if [ "${{ matrix.os }}" == "windows" ]; then
             find build -name "*.dll" -exec cp {} $ADDON_ID/$ADDON_ID.dll \;
+          elif [ "${{ matrix.os }}" == "macos" ]; then
+            find build -name "*.dylib" -exec cp {} $ADDON_ID/$ADDON_ID.dylib \;
           else
             # Linux/Android 通常是 libvfs.stream.fast.so
             find build -name "*.so" -exec cp {} $ADDON_ID/lib$ADDON_ID.so \;
@@ -151,7 +166,16 @@ jobs:
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
+        if: matrix.os != 'macos'
         with:
-          # 最终产物名称: vfs.stream.fast-1.0.0-windows-x86_64.zip
+          # 最终产物名称: vfs.stream.fast-1.0.0-windows-x86_64
           name: vfs.stream.fast-${{ env.VERSION }}-${{ matrix.os }}-${{ matrix.arch }}
+          path: staging/
+
+      - name: Upload Artifacts (macOS)
+        uses: actions/upload-artifact@v4
+        if: matrix.os == 'macos'
+        with:
+          # macOS 特殊命名: vfs.stream.fast-1.0.0-osx-arm64 / osx-x86_64
+          name: vfs.stream.fast-${{ env.VERSION }}-osx-${{ matrix.arch }}
           path: staging/

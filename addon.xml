@@ -21,7 +21,8 @@
              protocols="dav|davs|http|https"
              library_windows="vfs.stream.fast.dll"
              library_linux="libvfs.stream.fast.so"
-             library_android="libvfs.stream.fast.so"/>
+             library_android="libvfs.stream.fast.so"
+             library_osx="vfs.stream.fast.dylib"/>
 
   <extension point="xbmc.addon.metadata">
     <platform>all</platform>

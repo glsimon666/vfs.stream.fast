@@ -85,7 +85,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: xbmc/xbmc
-          ref: refs/heads/Piers  # 建议改为 Omega (Kodi 21) 以获得最佳兼容性
+          ref: master  # 建议改为 Omega (Kodi 21) 以获得最佳兼容性
           path: kodi_src
           fetch-depth: 1
 

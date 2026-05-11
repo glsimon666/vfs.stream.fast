@@ -78,11 +78,17 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${CURL_TARGET})
 
 if(WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_WINDOWS)
+    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE _USE_32BIT_TIME_T)
+    endif()
     target_link_libraries(${PROJECT_NAME} PRIVATE iphlpapi ws2_32)
 elseif(ANDROID)
     target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_ANDROID)
     # Ensure Large File Support on 32-bit Android
     target_compile_definitions(${PROJECT_NAME} PRIVATE -D_FILE_OFFSET_BITS=64)
+    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE -D_TIME_BITS=32)
+    endif()
     target_link_libraries(${PROJECT_NAME} PRIVATE log) # Link Android Log
     # Release 模式下去除符号表，减小体积
     target_link_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Release>:-s>)
@@ -90,6 +96,9 @@ elseif(UNIX AND NOT APPLE)
     target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_LINUX)
     # Ensure Large File Support on 32-bit Linux
     target_compile_definitions(${PROJECT_NAME} PRIVATE -D_FILE_OFFSET_BITS=64)
+    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE -D_TIME_BITS=32)
+    endif()
     # Release 模式下去除符号表，减小体积
     target_link_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Release>:-s>)
 endif()
